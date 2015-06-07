@@ -1,0 +1,92 @@
+# Profile: usr.sbin.noise
+# Author: Cameron Norman <camerontnorman@gmail.com>
+# License: 2 Clause BSD
+
+#include <tunables/global>
+
+@{APPNAME} = noise
+
+"/usr/bin/noise" {
+  #include <abstractions/gnome>
+  # Should merge into abstractions/gnome
+  owner @{HOME}/.config/gtk-3.0/               r,
+  owner @{HOME}/.config/gtk-3.0/*              r,
+  /usr/share/glib-2.0/                         r,
+  /usr/share/glib-2.0/**                       r,
+  /usr/share/gnome/applications/               r,
+  /usr/share/gnome/applications/*.desktop      r,
+  owner /{,var/}run/user/*/dconf/              rw,
+  owner /{,var/}run/user/*/dconf/user          rw,
+  owner @{HOME}/.config/dconf/user             r,
+  # Should merge into abstractions/freedesktop.org
+  owner @{HOME}/.icons/**                      r,
+  owner @{HOME}/.local/share/applications/     r,
+  /usr/local/share/applications/               r,
+  /usr/local/share/applications/mimeinfo.cache r,
+  /usr/local/share/applications/*.desktop      r,
+    # nested desktop entries
+  /usr/share/applications/*/                   r,
+  /usr/share/applications/*/*.desktop          r,
+  /usr/local/share/applications/*/             r,
+  /usr/local/share/applications/*/*.desktop    r,
+
+  #include <abstractions/p11-kit>
+  #include <abstractions/audio>
+  #include <abstractions/dbus-session>
+  #include <abstractions/ssl_certs>
+  #include <abstractions/nameservice>
+  #include <abstractions/ubuntu-helpers>
+  # These are needed for the about dialog links (use xdg-open?)
+  #include <abstractions/ubuntu-browsers>
+  #include <abstractions/ubuntu-email>
+
+  # Standard application dirs - there has got
+  # to be an abstraction for this stuff...
+  owner @{HOME}/.cache/@{APPNAME}/         rw,
+  owner @{HOME}/.cache/@{APPNAME}/**       rwkl,
+  owner @{HOME}/.config/@{APPNAME}/        rw,
+  owner @{HOME}/.config/@{APPNAME}/**      rwkl,
+  owner @{HOME}/.local/share/@{APPNAME}/   rw,
+  owner @{HOME}/.local/share/@{APPNAME}/** rwkl,
+  /usr/share/@{APPNAME}/                   r,
+  /usr/share/@{APPNAME}/**                 r,
+  /usr/local/share/@{APPNAME}/             r,
+  /usr/local/share/@{APPNAME}/**           r,
+
+  # GStreamer, maybe put into an abstraction
+  #/usr/lib/*/gstreamer1.0/        r,
+  /usr/lib/@{multiarch}/gstreamer1.0/gstreamer1.0/gst-plugin-scanner ix,
+  owner @{HOME}/.cache/gstreamer-1.0/   r,
+  owner @{HOME}/.cache/gstreamer-1.0/** r,
+
+  owner @{HOME}/.local/share/gvfs-metadata/home r,
+  
+  # Really ugly, but necessary for changing the library folder,
+  # translated music folders, and importing music.
+    # these are the only folders that can be chosen for the library,
+    # unless noise is not editing the metadata or organizing the folder
+  owner @{HOME}/                  rw,
+  owner @{HOME}/**                rw,
+  owner /**                       rw,
+    # for browsing folders, specifically
+  /                               r,
+  /**/                            r,
+
+  # TODO: test + deal with adding devices like ipods, etc.
+
+  /etc/udev/udev.conf             r,
+  /etc/machine-id                 r,
+  /etc/xml/catalog                r,
+
+  /usr/lib/@{multiarch}/libvisual-0.4/       r,
+  /usr/lib/@{multiarch}/libvisual-0.4/**     m,
+
+  owner /run/user/*/orcexec.*     w,
+  owner @{HOME}/orcexec.*         w,
+  owner /tmp/orcexec.*            m,
+
+  owner @{PROC}/@{pid}/          r,
+
+  # For last.fm integration, album art, etc.
+  network                         tcp,
+}

@@ -1,0 +1,38 @@
+# vim:syntax=apparmor
+# AppArmor policy for agenda
+# ###AUTHOR###
+# ###COPYRIGHT###
+# ###COMMENT###
+
+#include <tunables/global>
+
+# No template variables specified
+@{APPNAME} = agenda
+
+"/usr/bin/agenda" {
+  #include <abstractions/base>
+  #include <abstractions/gnome>
+  @{HOME}/.config/gtk-3.0/        r,
+  @{HOME}/.config/gtk-3.0/**      r,
+  /usr/share/glib-2.0/            r,
+  /usr/share/glib-2.0/**          r,
+  #include <abstractions/freedesktop.org>
+  owner @{HOME}/.icons/**         r,
+
+  owner /{,var/}run/user/*/dconf/              rw,
+  owner /{,var/}run/user/*/dconf/user          rw,
+  owner @{HOME}/.config/dconf/user             r,
+
+  # Rules specified via policy groups
+  # Policy group allowing various writes to standard directories in @{HOMEDIRS}
+  #include <abstractions/xdg-desktop>
+  owner @{HOME}/.cache/@{APPNAME}/ rw,
+  owner @{HOME}/.cache/@{APPNAME}/** rwkl,
+  owner @{HOME}/.config/@{APPNAME}/ rw,
+  owner @{HOME}/.config/@{APPNAME}/** rwkl,
+  owner @{HOME}/.local/share/@{APPNAME}/ rw,
+  owner @{HOME}/.local/share/@{APPNAME}/** rwkl,
+
+  owner @{HOME}/.local/share/gvfs-metadata/** r,
+}
+
