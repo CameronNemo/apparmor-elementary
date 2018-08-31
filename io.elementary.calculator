@@ -1,0 +1,18 @@
+# vim:syntax=apparmor
+
+#include <tunables/global>
+
+@{APPNAME} = io.elementary.calculator
+
+profile @{APPNAME} /usr/bin/@{APPNAME} {
+  #include <abstractions/base>
+  #include <abstractions/dbus-session>
+  #include <abstractions/gnome>
+  #include <abstractions/freedesktop.org>
+  #include <abstractions/dconf>
+  #include <abstractions/fonts>
+
+  owner /{,var/}run/user/*/dconf/user w,
+  owner @{PROC}/@{pid}/fd/ r,
+}
+
